@@ -24,7 +24,7 @@ plt.show()
 
 #%%Generador de ruido
 N=100
-ruido=np.random.normal(0,0.1,N)
+ruido=np.random.normal(0,0.1,N) # mu=0, sigma=0.1 de N muestra
 
 #%%
 ttr, xxr = mi_funcion_sen( vmax = 1, dc = 0, f0 = 1, ph=0,N=100, fs = 100)
