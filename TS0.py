@@ -8,20 +8,41 @@ This is a temporary script file.
 
 import numpy as np
 
+#%%Generador de senoidal
 def mi_funcion_sen( vmax, dc, f0, ph, N, fs):
     tt=np.arange(0,N,1)*(1/fs)
     xx=dc + vmax*np.sin(2*np.pi*f0*tt + ph)
     return tt,xx 
-##N=4
-##ruido=np.random.normal(0,0.1,N)
 import matplotlib.pyplot as plt
 
-
-tt, xx = mi_funcion_sen( vmax = 1, dc = 0, f0 = 500, ph=0,N=100, fs = 2000)
-##y=xx + ruido
+#%%Senoidal 
+tt, xx = mi_funcion_sen( vmax = 1, dc = 0, f0 = 1, ph=0,N=100, fs = 100)
 plt.figure()
 plt.grid()
 plt.plot(tt, xx)
+plt.show()
+
+#%%Generador de ruido
+N=100
+ruido=np.random.normal(0,0.1,N)
+
+#%%
+ttr, xxr = mi_funcion_sen( vmax = 1, dc = 0, f0 = 1, ph=0,N=100, fs = 100)
+yyr=xxr + ruido
+plt.figure()
+plt.grid()
+plt.plot(ttr, yyr)
+plt.show()
+
+#%% cuantizando 
+b=3 # b-bits
+vfs=3 #volts
+qq=vfs/2**b
+xxq=np.round(xx/qq) 
+
+plt.figure()
+plt.grid()
+plt.plot(tt, xxq)
 plt.show()
 
 
