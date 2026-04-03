@@ -22,8 +22,10 @@ def mi_funcion_sen( vmax, dc, f0, ph, N, fs):
 fs= 1000 #frecuencia de muestreo
 nn=fs #muestra
 f0=int(fs/nn) #f0
+#f0=700
 df=f0 #resolucion espectral
 ts=1/fs
+
 
 #%% cuantizador 
 b=8 # b-bits
@@ -65,34 +67,60 @@ plt.show()
 XX=fft(xx)
 XXabs=np.abs(XX) 
 XXang=np.angle(XX)
-XXabs_2=XXabs**2# densidad espectral 
+XXabs_2=(XXabs**2)/nn# densidad espectral 
 
 #FFT de senoidal + ruido
 SR=fft(sr)
 SRabs=np.abs(SR) 
 SRang=np.angle(SR)
-SRabs_2=SRabs**2 # densidad espectral
+SRabs_2=(SRabs**2)/nn# densidad espectral
 
 #FTT de senoidal + ruido cuantizada
 XXQ=fft(xxq)
 XXQabs=np.abs(XXQ) 
 XXQang=np.angle(XXQ)
-XXQabs_2=XXQabs**2  # densidad espectral
+XXQabs_2=(XXQabs**2)/nn  # densidad espectral
 
-FX= np.arange(nn)*df #defino el eje X en Hertz
+FX = np.arange(nn)*df #defino el eje X en Hertz
 
-plt.figure(3)
+
+# plt.figure(3)
+# plt.clf()
+# plt.plot(FX,np.log10(XXabs_2)*10, label="FFT senoidal")
+# plt.plot(FX,np.log10(SRabs_2)*10, label="FFT ruido")
+# plt.plot(FX,np.log10(XXQabs_2)*10, label="FFT ruido cuantizado")
+# plt.plot()
+# plt.grid()
+# plt.title("Densidad espectral de potencia")
+# plt.ylabel('Densidad de potencia [dB]')
+# plt.xlabel('Frecuencia [Hz]')
+# plt.legend()
+# plt.show()
+
+
+# %% efecto aliasing
+fsb=1000
+f0b=600
+tsb=1/fsb
+
+ttb, xxb = mi_funcion_sen( vmax = 1, dc = 0, f0 = f0b, ph=0,N=nn, fs =fsb)
+
+srb = xxb + ruido
+
+xxqb=np.round(srb/qq) *qq
+FX2 = np.fft.fftfreq(nn, tsb)
+
+XXQB=fft(xxqb)
+XXQBabs=np.abs(XXQB) 
+XXQBabs_2=(XXQBabs**2)/nn  # densidad espectral
+
+plt.figure(6)
 plt.clf()
-plt.plot(FX,np.log10(XXabs_2)*10, label="FFT senoidal")
-plt.plot(FX,np.log10(SRabs_2)*10, label="FFT ruido")
-plt.plot(FX,np.log10(XXQabs_2)*10, label="FFT ruido cuantizado")
-plt.plot()
-plt.grid()
-plt.title("Densidad espectral de potencia")
-plt.ylabel('Densidad de potencia [dB]')
-plt.xlabel('Frecuencia [Hz]')
-plt.legend()
+plt.plot(FX2,XXQBabs, "x")
+#plt.plot(FX2,XXabs, "o")
 plt.show()
+
+
 
 # %% DSP
 
@@ -126,7 +154,7 @@ ee=xxq-xx #secueencia de error
 plt.figure(4)
 plt.clf()
 plt.grid()
-plt.hist(ee)
+plt.hist(ee, bins=20)
 #plt.plot(ee, label='xxq' )
 plt.legend()
 plt.title(f"Ruido de cuantizacion para {b} bits Vfs= {vfs} - q={qq}" )
